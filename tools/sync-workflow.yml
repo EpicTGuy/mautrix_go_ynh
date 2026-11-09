@@ -1,0 +1,43 @@
+# Draft: open one "sync from mautrix_go_ynh" PR per package when the shared files change.
+# Needs a token allowed to push branches and open PRs on the YunoHost-Apps packages (secret SYNC_TOKEN).
+name: Sync packages
+
+on:
+  push:
+    branches: [main]
+    paths: [common/**, bridges/**]
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        bridge: [whatsapp, telegram, signal]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: YunoHost-Apps/mautrix_${{ matrix.bridge }}_ynh
+          ref: testing
+          path: package
+          token: ${{ secrets.SYNC_TOKEN }}
+      - name: Copy the shared files
+        run: tools/sync.sh ${{ matrix.bridge }} package
+      - name: Open or update the PR
+        working-directory: package
+        env:
+          GH_TOKEN: ${{ secrets.SYNC_TOKEN }}
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then echo "nothing to sync"; exit 0; fi
+          git config user.name "yunohost-bot"
+          git config user.email "yunohost-bot@users.noreply.github.com"
+          git checkout -B sync-mautrix-go
+          git add -A
+          git commit -m "Sync from mautrix_go_ynh ${GITHUB_SHA::7}"
+          git push -f origin sync-mautrix-go
+          gh pr view sync-mautrix-go >/dev/null 2>&1 || \
+            gh pr create --base testing --head sync-mautrix-go \
+              --title "Sync from mautrix_go_ynh" \
+              --body "Shared files updated from https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"

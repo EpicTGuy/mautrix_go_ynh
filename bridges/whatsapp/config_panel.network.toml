@@ -26,3 +26,19 @@
         yes = "true"
         no = "false"
         bind = ":__INSTALL_DIR__/config.yaml"
+
+        [privacy.config.send_presence_on_typing]
+        ask = "Send Presence on typing?"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        help = "Send the Presence as 'available' to WhatsApp when Users start typing on a Portal."
+        bind = ":__INSTALL_DIR__/config.yaml"
+
+        [privacy.config.url_previews]
+        ask = "Enable URL Preview?"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        help = "Should the Bridge detect URLs in outgoing messages, ask the HomeServer to generate a Preview, and send it to WhatsApp?"
+        bind = ":__INSTALL_DIR__/config.yaml"
