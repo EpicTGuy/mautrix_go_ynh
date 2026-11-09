@@ -1,0 +1,5 @@
+# Network part of config.yaml (tools/update_config.py): values replaced in the upstream example.
+[placeholders]
+api_id = "__API_ID__"
+api_hash = "__API_HASH__"
+"device_info.device_model" = "__DEVICE_MODEL__"

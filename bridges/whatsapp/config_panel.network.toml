@@ -1,0 +1,28 @@
+
+    [advanced.network]
+    name = "WhatsApp specific config options"
+
+        [advanced.network.displayname_template]
+        ask = "Displayname template for WhatsApp users"
+        type = "string"
+        help = "Defaults to '{{or .BusinessName .PushName .RedactedPhone 'Unknown user'}} (WA)'. validated WhatsApp business name. nickname set by the WhatsApp user. phone number with middle digits replaced by '∙'."
+        bind = ":__INSTALL_DIR__/config.yaml"
+
+        [advanced.network.os_name]
+        ask = "Device name that's shown in the 'WhatsApp Web' section in the mobile app."
+        type = "string"
+        bind = ":__INSTALL_DIR__/config.yaml"
+
+        [advanced.network.browser_name]
+        ask = "Browser name that determines the logo shown in the mobile app."
+        type = "select"
+        choices = ["unknown", "chrome", "firefox", "ie", "opera", "safari", "edge", "desktop", "ipad", "android_tablet", "ohana", "aloha", "catalina", "tcl_tv", "IOS_PHONE", "IOS_CATALYST", "ANDROID_PHONE", "ANDROID_AMBIGUOUS", "WEAR_OS", "AR_WRIST", "AR_DEVICE", "UWP"]
+        help = "Must be 'unknown' for a generic icon or a valid browser name if you want a specific logo."
+        bind = ":__INSTALL_DIR__/config.yaml"
+
+        [advanced.network.disable_view_once]
+        ask = "Should view-once messages disappear shortly after sending a read receipt on Matrix?"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        bind = ":__INSTALL_DIR__/config.yaml"

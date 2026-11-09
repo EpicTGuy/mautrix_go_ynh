@@ -1,0 +1,22 @@
+
+    [advanced.network]
+    name = "Telegram specific config options"
+
+        [advanced.network.api_id]
+        ask = "Telegram API keys: ID"
+        type = "string"
+        help = "Get your own API keys at https://my.telegram.org/apps"
+        bind = ":__INSTALL_DIR__/config.yaml"
+
+        [advanced.network.api_hash]
+        ask = "Telegram API keys: Hash"
+        type = "string"
+        help = "Get your own API keys at https://my.telegram.org/apps"
+        bind = ":__INSTALL_DIR__/config.yaml"
+
+        [advanced.network.disable_view_once]
+        ask = "Should view-once messages disappear shortly after sending a read receipt on Matrix?"
+        type = "boolean"
+        yes = "true"
+        no = "false"
+        bind = ":__INSTALL_DIR__/config.yaml"

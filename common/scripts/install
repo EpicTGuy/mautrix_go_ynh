@@ -1,0 +1,107 @@
+#!/bin/bash
+
+source _common.sh
+source /usr/share/yunohost/helpers
+
+# Satisfy shellcheck, those variables are known when starting the script:
+# shellcheck disable=SC2154
+echo From manifest: "$synapse_instance", \
+     From yunohost: "$app $install_dir" > /dev/null
+
+#=================================================
+# INITIALIZE AND STORE SETTINGS
+#=================================================
+
+# Install questions: booleans come as 1/0, config.yaml needs true/false
+normalize_bool_settings
+
+# Retrieve some values from selected Synapse instance and store them
+ynh_app_setting_set --key=synapse_instance --value="$synapse_instance"
+synapse_install_dir=$(ynh_app_setting_get --app $synapse_instance --key install_dir)
+server_name=$(ynh_app_setting_get --app $synapse_instance --key server_name)
+domain=$(ynh_app_setting_get --app $synapse_instance --key domain)
+ynh_app_setting_set --key=server_name --value="$server_name"
+ynh_app_setting_set --key=domain --value="$domain"
+
+#=================================================
+# SET STANDARD SETTINGS FROM DEFAULT CONFIG
+#=================================================
+
+listuser="$botusers"
+listadmin="$botadmin"
+ynh_app_setting_set --key=listuser --value="$listuser"
+ynh_app_setting_set --key=listadmin --value="$listadmin"
+
+pickle_key=$(ynh_string_random)
+ynh_app_setting_set --key=pickle_key --value="$pickle_key"
+
+# Every other setting gets its default (common ones in _common.sh, network ones in _bridge.sh)
+set_default_settings
+
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+ynh_script_progression "Setting up source files..."
+
+# Download, check integrity, uncompress and patch the source from app.src
+ynh_setup_source --dest_dir="$install_dir"
+
+#=================================================
+# ADD A CONFIGURATION
+#=================================================
+ynh_script_progression "Adding $app's configuration..."
+
+ynh_config_add --template="config.yaml" --destination="$install_dir/config.yaml"
+
+# This calls allows to set multiple users during install question "botusers" specifying them separated by a comma
+set__listuser
+set__listrelay
+set__listadmin
+
+#=================================================
+# REGISTER SYNAPSE APP-SERVICE
+#=================================================
+ynh_script_progression "Registering Synapse app-service"
+
+register_appservice
+ynh_store_file_checksum "$install_dir/config.yaml"
+
+$synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't restart with the appservice configuration"
+ynh_store_file_checksum "/etc/matrix-$synapse_instance/app-service/$app.yaml"
+
+#=================================================
+# SETUP SYSTEMD
+#=================================================
+ynh_script_progression "Configuring $app's systemd service..."
+
+# Create a dedicated systemd config
+ynh_config_add_systemd
+
+#=================================================
+# SETUP LOGROTATE
+#=================================================
+ynh_script_progression "Configuring log rotation..."
+
+# Use logrotate to manage application logfile(s)
+ynh_config_add_logrotate "/var/log/$app/$app.log" $app/$app
+
+#=================================================
+# INTEGRATE SERVICE IN YUNOHOST
+#=================================================
+ynh_script_progression "Integrating service in YunoHost..."
+
+yunohost service add $app --description="$app daemon for bridging $bridge_display and Matrix messages" --log="/var/log/$app/$app.log"
+
+#=================================================
+# START SYSTEMD SERVICE
+#=================================================
+ynh_script_progression "Starting $app's systemd service..."
+
+# Start a systemd service
+ynh_systemctl --service="$app" --action="start"
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression "Installation of $app completed"

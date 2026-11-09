@@ -1,0 +1,34 @@
+
+    [advanced.network]
+    name = "Signal specific config options"
+
+        [advanced.network.username_template]
+        ask = "Localpart template of MXIDs for remote users."
+        type = "string"
+        help = "Defaults to 'sg_{{.}}'. '{{.}}' is replaced with the internal ID of the user."
+        bind = ":__INSTALL_DIR__/config.yaml"
+        visible = "false"
+
+        [advanced.network.displayname_template]
+        ask = "Displayname template for Signal users"
+        type = "string"
+        help = "Defaults to '{{or .ProfileName .AboutEmoji 'Unknown user'}} (SG)'. The Signal profile name set by the user or The emoji set by the user in their profile."
+        bind = ":__INSTALL_DIR__/config.yaml"
+
+        [advanced.network.device_name]
+        ask = "Default device name that shows up in the Signal app."
+        type = "string"
+        help = "Defaults to 'mautrix-signal'"
+        bind = ":__INSTALL_DIR__/config.yaml"
+
+        [advanced.network.note_to_self_avatar]
+        ask = "Avatar image for the Note to Self room"
+        type = "string"
+        help = "Defaults to 'mxc://maunium.net/REBIVrqjZwmaWpssCZpBlmlL'"
+        bind = ":__INSTALL_DIR__/config.yaml"
+
+        [advanced.network.location_format]
+        ask = "Format for generating URLs from location messages for sending to Signal"
+        type = "select"
+        choices = ["https://www.openstreetmap.org/?mlat=%[1]s&mlon=%[2]s", "https://www.google.com/maps/place/%[1]s,%[2]s"]
+        bind = ":__INSTALL_DIR__/config.yaml"
