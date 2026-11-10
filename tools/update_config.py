@@ -1,18 +1,12 @@
 #!/usr/bin/env python3
-"""Rebuild the config.yaml templates from the official mautrix example configs (issue mautrix_telegram_ynh#91).
+"""Rebuild the config.yaml templates from the upstream example configs (mautrix_telegram_ynh#91).
 
   tools/update_config.py <bridge> <version>      e.g. tools/update_config.py whatsapp v0.2610.0
 
-Writes:
-  bridges/<bridge>/conf/network.yaml   the "network:" part, from pkg/connector/example-config.yaml of the bridge
-  common/conf/config.yaml              everything else, from bridgev2/matrix/mxmain/example-config.yaml of
-                                       mautrix-go, at the version required by the bridge's go.mod
-
-YunoHost values are put in place of the example ones:
-  - common keys: COMMON below (the same for every bridge);
-  - network keys: bridges/<bridge>/network.toml, table [placeholders] ("key.path" = "__VALUE__").
-Comments and every other value are kept as upstream wrote them, so a diff after an upstream release shows
-exactly what changed upstream.
+bridges/<bridge>/conf/network.yaml comes from the bridge's pkg/connector/example-config.yaml,
+common/conf/config.yaml from mautrix-go's bridgev2/matrix/mxmain/example-config.yaml (version from go.mod).
+Values replaced by YunoHost ones: COMMON below, and [placeholders] in bridges/<bridge>/network.toml.
+Everything else is upstream's, so the diff after a release is the upstream change.
 """
 import re, sys, tomllib, urllib.request
 from pathlib import Path
@@ -34,10 +28,10 @@ COMMON = {
     ('appservice', 'port'): '__PORT__',
     ('appservice', 'id'): '__APP__',
     ('appservice', 'bot', 'username'): '__BOTNAME__',
-    ('appservice', 'bot', 'displayname'): "'__DISPLAYNAME_YAML__'",
-    ('appservice', 'bot', 'avatar'): "'__AVATAR_YAML__'",
+    ('appservice', 'bot', 'displayname'): '"__DISPLAYNAME_YAML__"',
+    ('appservice', 'bot', 'avatar'): '__AVATAR__',
     ('appservice', 'ephemeral_events'): '__EPHEMERAL_EVENTS__',
-    ('appservice', 'username_template'): "'__USERNAME_TEMPLATE_YAML__'",
+    ('appservice', 'username_template'): '"__USERNAME_TEMPLATE_YAML__"',
     ('matrix', 'delivery_receipts'): '__DELIVERY_RECEIPTS__',
     ('encryption', 'allow'): '__ENCRYPTION__',
     ('encryption', 'default'): '__ENCRYPTION_DEFAULT__',

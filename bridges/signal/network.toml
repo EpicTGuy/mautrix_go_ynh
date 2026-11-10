@@ -3,7 +3,7 @@
 # YunoHost defaults (also shown in the config panel help)
 
 # config panel options, kept as settings
-displayname_template = "'__DISPLAYNAME_TEMPLATE_YAML__'"
-device_name = "'__DEVICE_NAME_YAML__'"
-note_to_self_avatar = "'__NOTE_TO_SELF_AVATAR_YAML__'"
-location_format = "'__LOCATION_FORMAT_YAML__'"
+displayname_template = '"__DISPLAYNAME_TEMPLATE_YAML__"'
+device_name = '"__DEVICE_NAME_YAML__"'
+note_to_self_avatar = '"__NOTE_TO_SELF_AVATAR_YAML__"'
+location_format = '"__LOCATION_FORMAT_YAML__"'

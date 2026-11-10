@@ -59,11 +59,8 @@ bridge_init() {
     :
 }
 
-# Free-text config panel options written by our own setter (short key=dotted path in config.yaml)
-panel_text_options=(
-    "displayname_template=network.displayname_template"
-    "device_name=network.device_name"
-    "note_to_self_avatar=network.note_to_self_avatar"
-    "location_format=network.location_format"
-    "username_template=appservice.username_template"
-)
+# Config panel validators (scripts/config): text written in config.yaml
+validate__displayname_template() { check_text "$displayname_template"; }
+validate__device_name() { check_text "$device_name"; }
+validate__note_to_self_avatar() { check_text "$note_to_self_avatar"; }
+validate__location_format() { check_text "$location_format"; }

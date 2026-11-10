@@ -12,6 +12,11 @@ get_config_permission() {
   echo $result
 }
 
+# bridge > relay > enabled: YunoHost's bind reads and writes one ">" level only
+get__enable_relaybot() {
+    sed -n "/^    relay:/,/^    [a-z]/s/^        enabled: *//p" "$install_dir/config.yaml" | head -n1
+}
+
 get__botname() {
     botname=$(ynh_app_setting_get --key botname)
     echo "${botname}"
@@ -65,9 +70,11 @@ validate__avatar() {
   [[ -z "$avatar" || "$avatar" == "remove" || "$avatar" =~ ^mxc://[A-Za-z0-9.:-]+/[A-Za-z0-9_-]+$ ]] || echo "The avatar must be 'remove' or an mxc:// URI"
 }
 
-validate__displayname() {
-  [[ "$displayname" != *$'\n'* ]] || echo "The display name must be on one line"
+# Text written in config.yaml: no backslash or line break
+check_text() {
+  [[ "$1" != *\\* && "$1" != *$'\n'* ]] || echo "Backslashes and line breaks are not allowed"
 }
+validate__displayname() { check_text "$displayname"; }
 
 validate__botname() {
   [[ "$botname" =~ ^[a-z0-9._=-]+$ ]] || echo "The bot name may only contain a-z, 0-9 and . _ = -"
@@ -77,23 +84,8 @@ validate__botname() {
 # SPECIFIC SETTERS FOR TOML SHORT KEYS
 #=================================================
 
-# Config panel options written in config.yaml by our own setter (short key=dotted path in config.yaml).
-# Text values are quoted properly; the bridge-specific ones are in panel_text_options (_bridge.sh).
-common_text_options=(
-    "displayname=appservice.bot.displayname"
-    "avatar=appservice.bot.avatar"
-)
-for kv in "${common_text_options[@]}" "${panel_text_options[@]}"; do
-    eval "set__${kv%%=*}() {
-        write_yaml_value '${kv#*=}' \"\$${kv%%=*}\"
-        ynh_app_setting_set --key='${kv%%=*}' --value=\"\$${kv%%=*}\"
-        ynh_store_file_checksum \"\$install_dir/config.yaml\"
-    }"
-done
-
-# bridge.relay.enabled: YunoHost's writer only handles one level of ">", this one has two
 set__enable_relaybot() {
-    write_yaml_value bridge.relay.enabled "$enable_relaybot" raw
+    sed -i "/^    relay:/,/^    [a-z]/s/^        enabled: .*/        enabled: $enable_relaybot/" "$install_dir/config.yaml"
     ynh_app_setting_set --key=enable_relaybot --value="$enable_relaybot"
     ynh_store_file_checksum "$install_dir/config.yaml"
 }

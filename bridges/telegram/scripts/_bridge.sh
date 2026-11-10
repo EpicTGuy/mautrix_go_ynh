@@ -101,8 +101,3 @@ bridge_init() {
 validate__api_id() {
     [[ "$api_id" =~ ^[0-9]+$ ]] || echo "The API ID is a number, see https://my.telegram.org/apps"
 }
-
-# Free-text config panel options written by our own setter (short key=dotted path in config.yaml)
-panel_text_options=(
-    "api_hash_key=network.api_hash"
-)

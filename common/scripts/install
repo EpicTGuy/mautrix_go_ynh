@@ -12,7 +12,7 @@ echo From manifest: "$synapse_instance", \
 # INITIALIZE AND STORE SETTINGS
 #=================================================
 
-# Install questions: booleans come as 1/0, config.yaml needs true/false
+# Boolean answers come as 1/0
 normalize_bool_settings
 
 # Retrieve some values from selected Synapse instance and store them
@@ -35,10 +35,8 @@ ynh_app_setting_set --key=listadmin --value="$listadmin"
 pickle_key=$(ynh_string_random)
 ynh_app_setting_set --key=pickle_key --value="$pickle_key"
 
-# Bridge-specific settings handling, see _bridge.sh
 bridge_init
 
-# Every other setting gets its default (common ones in _common.sh, network ones in _bridge.sh)
 set_default_settings
 
 #=================================================

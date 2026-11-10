@@ -43,7 +43,7 @@ services = ["__APP__"]
         yes = "true"
 		no = "false"
         help = "If allowed, the 'set-relay' command can be used to turn any Bridge User into a RelayBot for that chat. This allows people to talk on the remote network without an own account."
-        bind = "bridge>relay>enabled:__INSTALL_DIR__/config.yaml"
+        bind = "relay>enabled:__INSTALL_DIR__/config.yaml"  # read/written by get__/set__enable_relaybot (scripts/config)
 
         [main.bridge.admin_only]
         ask = "Should only Bridge Admins be allowed to set themselves as Relay Users?"
