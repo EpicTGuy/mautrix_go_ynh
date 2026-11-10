@@ -1,4 +1,4 @@
-# Draft: open one "sync from mautrix_go_ynh" PR per package when the shared files change.
+# Draft, to be copied to .github/workflows/ once a sync token exists: open one "sync from mautrix_go_ynh" PR per package when the shared files change.
 # Needs a token allowed to push branches and open PRs on the YunoHost-Apps packages (secret SYNC_TOKEN).
 name: Sync packages
 

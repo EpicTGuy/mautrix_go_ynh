@@ -73,7 +73,7 @@ tools/sync.sh whatsapp ../mautrix_whatsapp_ynh
 ```
 
 A change in the YunoHost logic: edit `common/`, then sync every package. A GitHub action
-(`.github/workflows/sync.yml`, draft) can do the sync and open one PR per package.
+(draft in `tools/sync-workflow.yml`, to be placed in `.github/workflows/` with a token allowed on the package repositories) can do the sync and open one PR per package.
 
 ## Tests
 
