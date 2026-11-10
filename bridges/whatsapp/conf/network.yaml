@@ -1,11 +1,11 @@
 # Network-specific config options
 network:
     # Device name that's shown in the "WhatsApp Web" section in the mobile app.
-    os_name: __OS_NAME__
+    os_name: '__OS_NAME_YAML__'
     # Browser name that determines the logo shown in the mobile app.
     # Must be "unknown" for a generic icon or a valid browser name if you want a specific icon.
     # List of valid browser names: https://github.com/tulir/whatsmeow/blob/efc632c008604016ddde63bfcfca8de4e5304da9/binary/proto/def.proto#L43-L64
-    browser_name: __BROWSER_NAME__
+    browser_name: '__BROWSER_NAME_YAML__'
 
     # Proxy to use for all WhatsApp connections.
     proxy: null
@@ -20,7 +20,7 @@ network:
     # {{.Phone}}         - phone number (international format)
     # {{.RedactedPhone}} - phone number with middle digits replaced by "∙"
     # {{.FullName}}      - Name you set in the contacts list
-    displayname_template: '{{or .BusinessName .PushName .Phone .RedactedPhone "Unknown user"}} (WA)'
+    displayname_template: '__DISPLAYNAME_TEMPLATE_YAML__'
 
     # Should incoming calls send a message to the Matrix room?
     call_start_notices: true
@@ -54,7 +54,7 @@ network:
     # Should polls be sent using unstable MSC3381 event types?
     extev_polls: false
     # Should view-once messages be disabled entirely?
-    disable_view_once: false
+    disable_view_once: __DISABLE_VIEW_ONCE__
     # Should the bridge always send "active" delivery receipts (two gray ticks on WhatsApp)
     # even if the user isn't marked as online (e.g. when presence bridging isn't enabled)?
     #

@@ -1,5 +1,9 @@
 # Network part of config.yaml (tools/update_config.py): values replaced in the upstream example.
 [placeholders]
 api_id = "__API_ID__"
-api_hash = "__API_HASH__"
-"device_info.device_model" = "__DEVICE_MODEL__"
+# setting named api_hash_key so that YunoHost redacts it in its logs
+api_hash = "'__API_HASH_KEY_YAML__'"
+"device_info.device_model" = "'__DEVICE_MODEL_YAML__'"
+
+# config panel options, kept as settings
+disable_view_once = "__DISABLE_VIEW_ONCE__"

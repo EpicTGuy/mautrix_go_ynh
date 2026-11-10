@@ -9,10 +9,12 @@ bridge_username_template="telegram_{{.}}"
 bridge_legacy_pickle_key="mautrix.bridge.e2ee"   # used by versions < 0.11
 
 # Network settings written in config.yaml (name=default).
-# api_id and api_hash are install questions: their default is only used if they are missing.
+# api_id and api_hash are install questions. The hash is a secret: it is stored as api_hash_key,
+# a name YunoHost redacts in its logs (it does not redact "api_hash").
 network_settings=(
+    "disable_view_once=false"
     "api_id="
-    "api_hash="
+    "api_hash_key="
     "device_model=mautrix-telegram"
 )
 
@@ -49,10 +51,9 @@ bridge_upgrade_compat() {
         ynh_app_setting_set --key=api_id --value="$api_id"
         ynh_app_setting_delete --key=apiid
     fi
-    if [ -z "${api_hash:-}" ]
+    if [ -z "${api_hash_key:-}" ] && [ -z "${api_hash:-}" ]
     then
         api_hash=$(ynh_app_setting_get --key=apihash)
-        ynh_app_setting_set --key=api_hash --value="$api_hash"
         ynh_app_setting_delete --key=apihash
     fi
     if [ -z "${displayname:-}" ]
@@ -83,3 +84,25 @@ bridge_upgrade_compat() {
         ynh_app_setting_delete --key=$key
     done
 }
+
+# Bridge-specific handling of settings (install and upgrade, before the defaults)
+bridge_init() {
+    # api_hash (install question, or setting of older versions) -> api_hash_key
+    if [ -z "${api_hash_key:-}" ] && [ -n "${api_hash:-}" ]
+    then
+        api_hash_key="$api_hash"
+        ynh_app_setting_set --key=api_hash_key --value="$api_hash_key"
+    fi
+    ynh_app_setting_delete --key=api_hash
+    unset api_hash
+}
+
+# Config panel validator (scripts/config)
+validate__api_id() {
+    [[ "$api_id" =~ ^[0-9]+$ ]] || echo "The API ID is a number, see https://my.telegram.org/apps"
+}
+
+# Free-text config panel options written by our own setter (short key=dotted path in config.yaml)
+panel_text_options=(
+    "api_hash_key=network.api_hash"
+)

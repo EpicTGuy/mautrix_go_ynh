@@ -86,5 +86,33 @@ perms | grep -q '@bob:example.org=admin' && ok "config panel: permissions" || ko
 run yunohost app config set "$app" main.bot.botname -v "${n}bot2"
 [ "$(cfg appservice.bot.username)" = "${n}bot2" ] && ok "config panel: bot name" || ko "bot name: $(cfg appservice.bot.username)"
 active "panel changes"
+echo "### $n: tricky values"
+for v in '@a:b\\x' '@c:d": admin' 'Your main Matrix account'; do
+    yunohost app config set "$app" main.permissions.listuser -v "$v" >>"$log" 2>&1 && ko "bad permission accepted: $v" || ok "bad permission refused: $v"
+done
+yunohost app config set "$app" main.bot.avatar -v "x: y" >>"$log" 2>&1 && ko "bad avatar accepted" || ok "bad avatar refused"
+run yunohost app config set "$app" main.bot.displayname -v "Robot: d'essai #1"
+yaml_ok && ok "config.yaml valid after panel" || ko "config.yaml invalid after panel"
+run yunohost app upgrade "$app" -F -f "$NEW" || ko "upgrade with tricky values failed"
+yaml_ok && [ "$(cfg appservice.bot.displayname)" = "Robot: d'essai #1" ] && ok "display name kept and valid after upgrade" || ko "display name after upgrade: $(cfg appservice.bot.displayname)"
+active "tricky values"
+if [ "$n" != telegram ]; then
+    tpl="{{.PushName}} (l'ami)"; [ "$n" = signal ] && tpl="{{.ProfileName}} (l'ami)"
+    run yunohost app config set "$app" advanced.network.displayname_template -v "$tpl"
+    yaml_ok && ok "network text option written as valid YAML" || ko "config.yaml invalid after network option"
+    run yunohost app upgrade "$app" -F -f "$NEW" || ko "upgrade failed"
+    [ "$(cfg network.displayname_template)" = "$tpl" ] && ok "network option kept after upgrade" || ko "network option after upgrade: $(cfg network.displayname_template)"
+    active "network option"
+fi
+if [ "$n" = telegram ]; then
+    h=$(setting api_hash_key)
+    [ -n "$h" ] && [ -z "$(setting api_hash)" ] && ok "api hash stored as api_hash_key" || ko "api hash setting"
+    nlog=$(grep -lF -- "$h" $(ls -t /var/log/yunohost/operations/*mautrix_telegram*.log | head -6) 2>/dev/null | wc -l)
+    [ "$nlog" = 0 ] && ok "api hash in clear in none of the last operation logs" || ko "api hash in clear in $nlog recent operation logs"
+fi
+run yunohost app remove "$app" --purge
+[ -e "/var/cache/yunohost/appconfbackup/var/www/$app" ] && ko "config copies left after removal" || ok "no config copy left after removal"
+run yunohost app install "$NEW" -a "$args" --force || ko "reinstall failed"
+active reinstall
 echo "  exposure: $(systemd-analyze security "$app" 2>/dev/null | tail -1)"
 echo "### $n: $([ $FAIL = 0 ] && echo ALL OK || echo FAILURES)"

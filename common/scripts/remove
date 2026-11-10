@@ -49,4 +49,8 @@ $synapse_install_dir/update_synapse_for_appservice.sh || ynh_die "Synapse can't 
 # END OF SCRIPT
 #=================================================
 
+# Copies of config.yaml (secrets included) kept by YunoHost when the file was changed by hand;
+# their owner UID would be given to the next app user created
+ynh_safe_rm "/var/cache/yunohost/appconfbackup/var/www/$app"
+
 ynh_script_progression "Removal of $app completed"

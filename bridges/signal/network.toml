@@ -1,5 +1,9 @@
 # Network part of config.yaml (tools/update_config.py): values replaced in the upstream example.
 [placeholders]
 # YunoHost defaults (also shown in the config panel help)
-displayname_template = "'{{or .ProfileName .AboutEmoji \"Unknown user\"}} (SG)'"
-location_format = "'https://www.openstreetmap.org/?mlat=%[1]s&mlon=%[2]s'"
+
+# config panel options, kept as settings
+displayname_template = "'__DISPLAYNAME_TEMPLATE_YAML__'"
+device_name = "'__DEVICE_NAME_YAML__'"
+note_to_self_avatar = "'__NOTE_TO_SELF_AVATAR_YAML__'"
+location_format = "'__LOCATION_FORMAT_YAML__'"

@@ -1,6 +1,10 @@
 # Network part of config.yaml (tools/update_config.py): values replaced in the upstream example.
 [placeholders]
-os_name = "__OS_NAME__"
-browser_name = "__BROWSER_NAME__"
+os_name = "'__OS_NAME_YAML__'"
+browser_name = "'__BROWSER_NAME_YAML__'"
 send_presence_on_typing = "__SEND_PRESENCE_ON_TYPING__"
 url_previews = "__URL_PREVIEWS__"
+
+# config panel options, kept as settings
+displayname_template = "'__DISPLAYNAME_TEMPLATE_YAML__'"
+disable_view_once = "__DISABLE_VIEW_ONCE__"

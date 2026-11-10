@@ -10,6 +10,8 @@ bridge_legacy_pickle_key="maunium.net/go/mautrix-whatsapp"   # used by versions 
 
 # Network settings written in config.yaml (name=default)
 network_settings=(
+    'displayname_template={{or .BusinessName .PushName .Phone .RedactedPhone "Unknown user"}} (WA)'
+    "disable_view_once=false"
     "os_name=Mautrix-WhatsApp bridge"
     "browser_name=unknown"
     "send_presence_on_typing=false"
@@ -25,3 +27,14 @@ bridge_upgrade_compat() {
         ynh_app_setting_set --key=botname --value="$botname"
     fi
 }
+
+# Bridge-specific handling of settings (install and upgrade, before the defaults)
+bridge_init() {
+    :
+}
+
+# Free-text config panel options written by our own setter (short key=dotted path in config.yaml)
+panel_text_options=(
+    "displayname_template=network.displayname_template"
+    "os_name=network.os_name"
+)

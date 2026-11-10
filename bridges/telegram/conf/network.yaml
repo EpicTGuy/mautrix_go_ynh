@@ -2,11 +2,11 @@
 network:
     # Get your own API keys at https://my.telegram.org/apps
     api_id: __API_ID__
-    api_hash: __API_HASH__
+    api_hash: '__API_HASH_KEY_YAML__'
 
     # Device info shown in the Telegram device list.
     device_info:
-        device_model: __DEVICE_MODEL__
+        device_model: '__DEVICE_MODEL_YAML__'
         system_version:
         app_version: auto
         lang_code: en
@@ -115,7 +115,7 @@ network:
     # document. Defaults to 4096x4096 = 16777216.
     image_as_file_pixels: 16777216
     # Should view-once messages be disabled entirely?
-    disable_view_once: false
+    disable_view_once: __DISABLE_VIEW_ONCE__
     # Should video URL previews be bridged as m.video messages to Matrix?
     # By default, video URL previews will not be bridged.
     video_url_preview_as_file: false

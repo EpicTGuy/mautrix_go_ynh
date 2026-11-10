@@ -63,6 +63,9 @@ ynh_app_setting_set --key=pickle_key --value="$pickle_key"
 # Booleans stored as 1/0 by older versions are not read as booleans in config.yaml (e.g. "encryption: 1")
 normalize_bool_settings
 
+# Bridge-specific settings handling, see _bridge.sh
+bridge_init
+
 # Every setting still empty gets its default (common ones in _common.sh, network ones in _bridge.sh)
 set_default_settings
 
@@ -87,6 +90,7 @@ listrelay="*"
 listuser="@user:domain.tld"
 listadmin="@admin:domain.tld"
 
+set_yaml_vars
 ynh_config_add --template="config.yaml" --destination="$install_dir/config.yaml"
 
 listrelay=$listrelay_

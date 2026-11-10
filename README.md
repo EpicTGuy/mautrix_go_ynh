@@ -51,6 +51,13 @@ Everything the packages did is kept (same settings, same names, same migrations)
   now `bridge>relay>enabled`); the WhatsApp-only options (presence on typing, URL previews) are no longer shown
   for Telegram and Signal, whose config has no such keys; Signal's "disappear view-once" option is gone,
   upstream removed it; changing the bot name only rewrites the bot's `username:` line.
+- Config panel values are checked (permission entries, avatar, bot name, API ID) and text is written as valid
+  YAML (an apostrophe or a `: ` broke `config.yaml`; a bad permission entry could even get the app removed by a
+  failed upgrade). Network options of the panel are kept across upgrades (they were lost).
+- Telegram's API hash is stored as `api_hash_key`, a name YunoHost hides in its logs (it was in clear); the
+  install question should be `type = "password"` in the manifest.
+- `remove` deletes the copies of `config.yaml` YunoHost keeps in `/var/cache/yunohost/appconfbackup`.
+- See [SECURITY-REVIEW.md](SECURITY-REVIEW.md).
 - `config.yaml` follows mautrix-go v0.32.0 / bridges v0.2610.0 (new upstream options were missing).
 - Signal: the `sg_` prefix detection now really looks for `@sg_` users (the first query compared `t` with
   psql's ` t`, so any database with the table got `sg_`).

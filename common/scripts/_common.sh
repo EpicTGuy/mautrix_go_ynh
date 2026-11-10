@@ -45,6 +45,51 @@ set_default_settings() {
     done
 }
 
+# For each setting <name>, <name>_yaml is its value ready to be put between single quotes in config.yaml
+# (a quote is doubled), so that text like "Bot: #1" never breaks the YAML.
+set_yaml_vars() {
+    local kv key value
+    for kv in "${common_settings[@]}" "${network_settings[@]}"; do
+        key="${kv%%=*}"
+        value="${!key:-}"
+        printf -v "${key}_yaml" '%s' "${value//\'/\'\'}"
+    done
+}
+
+# Write one value in config.yaml: write_yaml_value <dotted.path> <value> [raw]
+# The value is written between single quotes (a quote doubled), unless "raw" (booleans, numbers).
+# Used by the config panel: YunoHost's own writer turns ' into \', which is not valid YAML.
+write_yaml_value() {
+    YAML_VALUE="$2" python3 - "$install_dir/config.yaml" "$1" "${3:-}" <<'PY'
+import os, re, sys
+path, dotted, raw = sys.argv[1:4]
+want = dotted.split(".")
+value = os.environ["YAML_VALUE"].replace("\n", " ")
+if raw != "raw":
+    value = "'" + value.replace("'", "''") + "'"
+lines = open(path).read().split("\n")
+stack = []
+for i, line in enumerate(lines):
+    m = re.match(r"^( *)([A-Za-z_][A-Za-z0-9_]*):(\s.*)?$", line)
+    if not m:
+        continue
+    depth = len(m.group(1)) // 4
+    stack = stack[:depth] + [m.group(2)]
+    if stack == want:
+        comment = re.search(r"\s+#.*$", m.group(3) or "")
+        lines[i] = f"{m.group(1)}{m.group(2)}: {value}" + (comment.group(0) if comment and raw == "raw" else "")
+        break
+else:
+    sys.exit(f"{dotted} not found in {path}")
+open(path, "w").write("\n".join(lines))
+PY
+}
+
+# Allowed permission entries: "*", a server name or a Matrix ID
+valid_permission_entry() {
+    [[ "$1" == "*" || "$1" =~ ^[A-Za-z0-9.-]+(:[0-9]+)?$ || "$1" =~ ^@[^:[:space:]\"\\]+:[A-Za-z0-9.-]+(:[0-9]+)?$ ]]
+}
+
 # 1/0/yes/no -> true/false, stored back if it changed
 normalize_bool_settings() {
     local key value
@@ -93,7 +138,12 @@ apply_permissions() {
     for user in "${rawArray[@]}"; do
         user="${user#"${user%%[![:space:]]*}"}"
         user="${user%"${user##*[![:space:]]}"}"
-        [ -n "$user" ] && usersArray+=("$user")
+        [ -z "$user" ] && continue
+        if valid_permission_entry "$user"; then
+            usersArray+=("$user")
+        else
+            ynh_print_warn "Ignoring invalid entry '$user' for role $role (expected *, a server name or a Matrix ID)"
+        fi
     done
 
     if [ ${#usersArray[@]} -gt 0 ]

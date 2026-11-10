@@ -9,7 +9,12 @@ bridge_username_template="signal_{{.}}"   # older installs use sg_{{.}}, see bri
 bridge_legacy_pickle_key="mautrix.bridge.e2ee"   # used by versions < 0.11
 
 # Network settings written in config.yaml (name=default)
-network_settings=()
+network_settings=(
+    'displayname_template={{or .ProfileName .AboutEmoji "Unknown user"}} (SG)'
+    "device_name=mautrix-signal"
+    "note_to_self_avatar=mxc://maunium.net/REBIVrqjZwmaWpssCZpBlmlL"
+    'location_format=https://www.openstreetmap.org/?mlat=%[1]s&mlon=%[2]s'
+)
 
 # Migrations from older versions of this package (run at upgrade, before the defaults)
 bridge_upgrade_compat() {
@@ -48,3 +53,17 @@ bridge_upgrade_compat() {
         ynh_app_setting_set --key=username_template --value="$username_template"
     fi
 }
+
+# Bridge-specific handling of settings (install and upgrade, before the defaults)
+bridge_init() {
+    :
+}
+
+# Free-text config panel options written by our own setter (short key=dotted path in config.yaml)
+panel_text_options=(
+    "displayname_template=network.displayname_template"
+    "device_name=network.device_name"
+    "note_to_self_avatar=network.note_to_self_avatar"
+    "location_format=network.location_format"
+    "username_template=appservice.username_template"
+)

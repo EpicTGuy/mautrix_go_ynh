@@ -251,8 +251,8 @@ appservice:
         username: __BOTNAME__
         # Display name and avatar for bot. Set to "remove" to remove display name/avatar, leave empty
         # to leave display name/avatar as-is.
-        displayname: __DISPLAYNAME__
-        avatar: __AVATAR__
+        displayname: '__DISPLAYNAME_YAML__'
+        avatar: '__AVATAR_YAML__'
 
     # Whether to receive ephemeral events via appservice transactions.
     ephemeral_events: __EPHEMERAL_EVENTS__
@@ -268,7 +268,7 @@ appservice:
 
     # Localpart template of MXIDs for remote users.
     # {{.}} is replaced with the internal ID of the user.
-    username_template: __USERNAME_TEMPLATE__
+    username_template: '__USERNAME_TEMPLATE_YAML__'
 
 # Config options that affect the Matrix connector of the bridge.
 matrix:

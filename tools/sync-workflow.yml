@@ -16,8 +16,8 @@ jobs:
       matrix:
         bridge: [whatsapp, telegram, signal]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: YunoHost-Apps/mautrix_${{ matrix.bridge }}_ynh
           ref: testing

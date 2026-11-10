@@ -48,9 +48,55 @@ EOF
 # SPECIFIC VALIDATORS FOR TOML SHORT KEYS
 #=================================================
 
+validate_permission_list() {
+  local entries user
+  IFS=',' read -r -a entries <<< "${1//\"}"
+  for user in "${entries[@]}"; do
+    user="${user#"${user%%[![:space:]]*}"}"
+    user="${user%"${user##*[![:space:]]}"}"
+    [ -z "$user" ] || valid_permission_entry "$user" || { echo "Invalid entry '$user': use *, a server name (example.org) or a Matrix ID (@user:example.org)"; return; }
+  done
+}
+validate__listrelay() { validate_permission_list "$listrelay"; }
+validate__listuser() { validate_permission_list "$listuser"; }
+validate__listadmin() { validate_permission_list "$listadmin"; }
+
+validate__avatar() {
+  [[ -z "$avatar" || "$avatar" == "remove" || "$avatar" =~ ^mxc://[A-Za-z0-9.:-]+/[A-Za-z0-9_-]+$ ]] || echo "The avatar must be 'remove' or an mxc:// URI"
+}
+
+validate__displayname() {
+  [[ "$displayname" != *$'\n'* ]] || echo "The display name must be on one line"
+}
+
+validate__botname() {
+  [[ "$botname" =~ ^[a-z0-9._=-]+$ ]] || echo "The bot name may only contain a-z, 0-9 and . _ = -"
+}
+
 #=================================================
 # SPECIFIC SETTERS FOR TOML SHORT KEYS
 #=================================================
+
+# Config panel options written in config.yaml by our own setter (short key=dotted path in config.yaml).
+# Text values are quoted properly; the bridge-specific ones are in panel_text_options (_bridge.sh).
+common_text_options=(
+    "displayname=appservice.bot.displayname"
+    "avatar=appservice.bot.avatar"
+)
+for kv in "${common_text_options[@]}" "${panel_text_options[@]}"; do
+    eval "set__${kv%%=*}() {
+        write_yaml_value '${kv#*=}' \"\$${kv%%=*}\"
+        ynh_app_setting_set --key='${kv%%=*}' --value=\"\$${kv%%=*}\"
+        ynh_store_file_checksum \"\$install_dir/config.yaml\"
+    }"
+done
+
+# bridge.relay.enabled: YunoHost's writer only handles one level of ">", this one has two
+set__enable_relaybot() {
+    write_yaml_value bridge.relay.enabled "$enable_relaybot" raw
+    ynh_app_setting_set --key=enable_relaybot --value="$enable_relaybot"
+    ynh_store_file_checksum "$install_dir/config.yaml"
+}
 
 set__botname() {
     old_botname=$(ynh_app_setting_get --key botname)

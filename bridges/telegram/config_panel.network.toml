@@ -8,11 +8,11 @@
         help = "Get your own API keys at https://my.telegram.org/apps"
         bind = ":__INSTALL_DIR__/config.yaml"
 
-        [advanced.network.api_hash]
+        [advanced.network.api_hash_key]
         ask = "Telegram API keys: Hash"
         type = "string"
         help = "Get your own API keys at https://my.telegram.org/apps"
-        bind = ":__INSTALL_DIR__/config.yaml"
+        bind = "api_hash:__INSTALL_DIR__/config.yaml"
 
         [advanced.network.disable_view_once]
         ask = "Should view-once messages disappear shortly after sending a read receipt on Matrix?"
